@@ -21,7 +21,7 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_KEY_ACCESS_ID }}
           aws configure set default.region ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - mame: Setup Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.6.5
