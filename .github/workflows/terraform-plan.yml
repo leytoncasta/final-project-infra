@@ -31,6 +31,9 @@ jobs:
         with:
           terraform_version: 1.6.5
       
+      - name: Terraform Init
+        run: terraforn init
+      
       - name: Terraform Format
         run: terraform fmt
 
