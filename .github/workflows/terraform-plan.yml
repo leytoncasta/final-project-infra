@@ -10,16 +10,21 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
+      AWS_KEY_ACCESS_ID: ${{ secrets.AWS_KEY_ACCESS_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
     steps:
       - name: checkout code
         uses: actions/checkout@v2
 
       - name: configure aws
         run: |
-          echo "Login AWS"
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_KEY_ACCESS_ID }}
-          aws configure set default.region ${{ secrets.AWS_DEFAULT_REGION }}
+          echo "Login AWS: $AWS_ACCESS_ID , $AWS_KEY_ACCESS_ID , $AWS_DEFAULT_REGION"
+          aws configure set aws_access_key_id $AWS_ACCESS_ID
+          aws configure set aws_secret_access_key $AWS_KEY_ACCESS_ID
+          aws configure set default.region $AWS_DEFAULT_REGION
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
