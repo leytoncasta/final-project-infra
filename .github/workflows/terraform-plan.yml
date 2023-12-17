@@ -32,7 +32,10 @@ jobs: # Se definen los jobs
           terraform_version: 1.6.5 # Usamos una versión en específico de terrafor. Para este caso, la 1.6.5
       
       - name: Terraform Init # Nombre del cuarto paso
-        run: terraform init # Inicializamos directorio de trabajo de terraform. Instalación de plugins, inicializar backend, inicializar módulos
+        # Inicializamos directorio de trabajo de terraform. Instalación de plugins, inicializar backend, inicializar módulos
+        run: |
+          ls
+          terraform init 
       
       - name: Terraform Format # Nombre del quinto paso
         run: terraform fmt # Damos un formato de código a todos los archivos con extensión ".tf"
