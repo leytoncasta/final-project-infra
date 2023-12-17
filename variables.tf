@@ -50,26 +50,26 @@ variable "cidr_block_sub2" {
 // Definimos una variables para cargar las unidades de cpu
 variable "cpu" {
   description = "unidades de cpu"
-  type = string
+  type        = string
 }
 
 # ---------------------------------------------------------------------
 // Definimos una variables para cargar la memoria
 variable "memory" {
   description = "cantidad de memoria en Mb"
-  type = string
+  type        = string
 }
 
 # ---------------------------------------------------------------------
 // Definimos una variables para cargar la sub-red dos
 variable "container_image" {
   description = "nombre de la imagen"
-  type = string
+  type        = string
 }
 
 # ---------------------------------------------------------------------
 // Definimos variables para las unidades de cpu para tareas de FARGATE
 variable "default_root_object" {
   description = "valor del objeto de origen"
-  type = string
+  type        = string
 }
