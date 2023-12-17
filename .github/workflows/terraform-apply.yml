@@ -1,0 +1,64 @@
+name: merge pull reques main # Nombre del gitHub Actions workflow
+
+on: # Definimos evento que dispara el flujo de trabajo
+  pull_request: # El evento se activa en un pull-request
+    types: # El evento debe ser de tipo closed (Cerrar PR)
+      - closed  
+  workflow_run: # Definimos segundo evento que dispara el flujo de trabajo
+    workflows: # El evento se activa con pipeline del terraform plan
+      - workflow terraform para pull-request # Nombre del pipeline del terraform plan
+    types: # El workflow del terraform plan, debe haberse completado
+      - completed
+
+jobs: # Se definen los jobs
+  terraform_apply: # Solo se definió un job para este workflow (terraform)
+    runs-on: ubunto-latest # Este job corre en un ambiente de ubunto
+
+    env: # Variabes de ambiente para ser usada en el job. El valor de estas variabkes es tomado de os secretos 
+      AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }} # Variable login en AWS - Access key id
+      AWS_KEY_ACCESS_ID: ${{ secrets.AWS_KEY_ACCESS_ID }} # Variable login en AWS - Secret Access key
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }} # Variable login en AWS - defaut region
+
+    steps:
+      - name: validar si PR esta merged en rama main # Nombre del primer paso
+        #Condiiones que se deben cumplir --> Hacer un pull request en main, cerrar pull request, pull request merged,  el merged debe estar dado en la rama main
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged && github.event.pull_request.base.ref == 'main'
+        # Imrimimos confirmacón del evento
+        run: |
+          echo "Pull Request Merged en rama main"
+      
+      - name: checkout code # Nombre del segundo paso
+        uses: actions/checkout@v2 # Trae el código del repo a el runner machine
+
+      - name: configure aws # Nombre del tercer paso
+        run: | # Ejecutamos varios comandos bash. para realizar login in aws
+          echo "Login AWS: $AWS_ACCESS_ID , $AWS_KEY_ACCESS_ID , $AWS_DEFAULT_REGION"
+          aws configure set aws_access_key_id $AWS_ACCESS_ID
+          aws configure set aws_secret_access_key $AWS_KEY_ACCESS_ID
+          aws configure set default.region $AWS_DEFAULT_REGION
+
+      - name: Setup Terraform # Nombre del cuarto paso
+        uses: hashicorp/setup-terraform@v1 # Configuramos terraform en el pipeline
+        with:
+          terraform_version: 1.6.5 # Usamos una versión en específico de terrafor. Para este caso, la 1.6.5
+
+      - name: Terraform Apply # Nombre del quinto paso
+        run: terraform apply # Aplica los cambios descritos en los archivos de configuración de terraform. Usado para crear, modificar y borrar recursos definidos en la infraestructura
+
+      - name: guardar .tfstate en bucket S3 # Nombre del sexto paso
+        run: aws s3api put-object --bucket bucket-terraform-state-final-project --key tfstate/terraform.tfstate --body terraform.tfstate # Enviamos el archivo .tfstate al bucket s3 creado manualmente
+
+      - name: Espera persistencia infra # Nombre del septimo paso
+        run: | # Delay de 5 min post a la creación de la infra
+          for i in {1..5}; do
+            sleep 60
+          done
+      
+      - name: Eliminar contenido bucket s3 # Nombre del octavo paso
+        run: aws s3 rm s3://bucket-terraform-state-final-project --recursive # Se elimina todos los archivos del bucket creado manualmente
+      
+      - name: Destruir infraestructura # Nombre del último paso
+        run: terraform destroy # Destruimos toda la infra creada. 
+
+
+       

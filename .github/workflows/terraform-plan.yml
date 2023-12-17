@@ -8,7 +8,7 @@ on: # Definimos evento que dispara el flujo de trabajo
 
 jobs: # Se definen los jobs
   terraform: # Solo se definió un job para este workflow (terraform)
-    runs-on: ubuntu-latest # Este job corre en un ambente de ubunto
+    runs-on: ubuntu-latest # Este job corre en un ambiente de ubunto
 
     env: # Variabes de ambiente para ser usada en el job. El valor de estas variabkes es tomado de os secretos 
       AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }} # Variable login en AWS - Access key id
