@@ -14,6 +14,12 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v2
 
+      - name: configure aws
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_KEY_ACCESS_ID }}
+          aws configure set default.region ${{ secrets.AWS_DEFAULT_REGION }}
+
       - mame: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
