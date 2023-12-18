@@ -44,7 +44,7 @@ jobs: # Se definen los jobs
           terraform init 
 
       - name: Terraform Apply # Nombre del quinto paso
-        run: terraform apply # Aplica los cambios descritos en los archivos de configuración de terraform. Usado para crear, modificar y borrar recursos definidos en la infraestructura
+        run: terraform apply -auto-approve # Aplica los cambios descritos en los archivos de configuración de terraform. Usado para crear, modificar y borrar recursos definidos en la infraestructura
 
       - name: guardar .tfstate en bucket S3 # Nombre del sexto paso
         run: aws s3api put-object --bucket bucket-terraform-state-final-project --key tfstate/terraform.tfstate --body terraform.tfstate # Enviamos el archivo .tfstate al bucket s3 creado manualmente
