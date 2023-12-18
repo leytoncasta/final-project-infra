@@ -3,12 +3,7 @@ name: merge pull reques main # Nombre del gitHub Actions workflow
 on: # Definimos evento que dispara el flujo de trabajo
   pull_request: # El evento se activa en un pull-request
     types: # El evento debe ser de tipo closed (Cerrar PR)
-      - closed  
-  workflow_run: # Definimos segundo evento que dispara el flujo de trabajo
-    workflows: # El evento se activa con pipeline del terraform plan
-      - workflow terraform para pull-request # Nombre del pipeline del terraform plan
-    types: # El workflow del terraform plan, debe haberse completado
-      - completed
+      - closed
 
 jobs: # Se definen los jobs
   terraform_apply: # Solo se definió un job para este workflow (terraform)
