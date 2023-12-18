@@ -56,7 +56,7 @@ jobs: # Se definen los jobs
 
       - name: Espera persistencia infra # Nombre del septimo paso
         run: | # Delay de 5 min post a la creación de la infra
-          for i in {1..5}; do
+          for i in {1..20}; do
             sleep 60
           done
       
