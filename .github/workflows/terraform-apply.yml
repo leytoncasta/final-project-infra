@@ -17,7 +17,7 @@ jobs: # Se definen los jobs
     steps:
       - name: validar si PR esta merged en rama main # Nombre del primer paso
         #Condiiones que se deben cumplir --> Hacer un pull request en main, cerrar pull request, pull request merged,  el merged debe estar dado en la rama main
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged && github.event.pull_request.base.ref == 'main'
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         # Imrimimos confirmacón del evento
         run: |
           echo "Pull Request Merged en rama main"
