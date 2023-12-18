@@ -66,8 +66,15 @@ jobs: # Se definen los jobs
       - name: Eliminar contenido bucket s3 index # Nombre del 9no paso
         run: aws s3 rm s3://s3-bucket-braves --recursive # Se elimina todos los archivos del bucket
 
-      - name: Eliminar imágenes ECR # Nombre del 9no paso
+      - name: Eliminar imágenes ECR # Nombre del 10mo paso
         run: aws ecr describe-images --repository-name ecr_repo_braves --query 'imageDetails[*].[imageDigest]' --output text | xargs -I {} aws ecr batch-delete-image --repository-name ecr_repo_braves --image-ids imageDigest={} # Eliminar todas las imágenes del ECR
+
+      - name: Detener y eliminar servicios # Nombre del 11vo paso
+        # (1). Finalizamos los servicios asegurando que tareas nuevas no serán ejecutadas. (2) Se espera a que la tarea actual desaparezca. (3) Eliminamos el servicio
+        run: |
+          aws ecs update-service --cluster ecs-braves --service service-braves --desired-count 0
+          aws ecs describe-services --cluster ecs-braves --services service-braves
+          aws ecs delete-service --cluster ecs-braves --service service-braves
 
       - name: Destruir infraestructura # Nombre del último paso
         run: terraform destroy -auto-approve # Destruimos toda la infra creada. 
