@@ -4,6 +4,11 @@ on: # Definimos evento que dispara el flujo de trabajo
   pull_request: # El evento se activa en un pull-request
     types: # El evento debe ser de tipo closed (Cerrar PR)
       - closed
+  workflow_run: # Definimos segundo evento que dispara el flujo de trabajo
+    workflows: # El evento se activa con pipeline del terraform plan
+      - workflow terraform para pull-request # Nombre del pipeline del terraform plan
+    types: # El workflow del terraform plan, debe haberse completado
+      - completed
 
 jobs: # Se definen los jobs
   terraform_apply: # Solo se definió un job para este workflow (terraform)
@@ -58,8 +63,14 @@ jobs: # Se definen los jobs
       - name: Eliminar contenido bucket s3 # Nombre del octavo paso
         run: aws s3 rm s3://bucket-terraform-state-final-project --recursive # Se elimina todos los archivos del bucket creado manualmente
       
+      - name: Eliminar contenido bucket s3 index # Nombre del 9no paso
+        run: aws s3 rm s3://s3-bucket-braves --recursive # Se elimina todos los archivos del bucket
+
+      - name: Eliminar imágenes ECR # Nombre del 9no paso
+        run: aws ecr describe-images --repository-name ecr_repo_braves --query 'imageDetails[*].[imageDigest]' --output text | xargs -I {} aws ecr batch-delete-image --repository-name ecr_repo_braves --image-ids imageDigest={} # Eliminar todas las imágenes del ECR
+
       - name: Destruir infraestructura # Nombre del último paso
-        run: terraform destroy # Destruimos toda la infra creada. 
+        run: terraform destroy -auto-approve # Destruimos toda la infra creada. 
 
 
        
