@@ -37,6 +37,12 @@ jobs: # Se definen los jobs
         with:
           terraform_version: 1.6.5 # Usamos una versión en específico de terrafor. Para este caso, la 1.6.5
 
+      - name: Terraform Init # Nombre del cuarto paso
+        # Inicializamos directorio de trabajo de terraform. Instalación de plugins, inicializar backend, inicializar módulos
+        run: |
+          ls
+          terraform init 
+
       - name: Terraform Apply # Nombre del quinto paso
         run: terraform apply # Aplica los cambios descritos en los archivos de configuración de terraform. Usado para crear, modificar y borrar recursos definidos en la infraestructura
 
