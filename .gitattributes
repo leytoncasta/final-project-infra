@@ -1,0 +1,7 @@
+# Comprtamiento por defecto en caso de no se declaren los archvos a normalizar
+* text=auto
+# Declaramos archivos de texto que deben estar normalizados
+*.hcl text
+*.tf text
+*.tfstate text
+*.backup text

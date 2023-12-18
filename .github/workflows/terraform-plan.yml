@@ -1,0 +1,47 @@
+name: workflow terraform para pull-request # Nombre del gitHub Actions workflow
+
+on: # Definimos evento que dispara el flujo de trabajo
+  pull_request: # El evento se activa en un pull-request
+    types: # Dos eventos son considerados
+      - opened # Cuando se abre el pull-request
+      - synchronize # Cando cambios son empujados al pull-request ya abierto
+
+jobs: # Se definen los jobs
+  terraform: # Solo se definió un job para este workflow (terraform)
+    runs-on: ubuntu-latest # Este job corre en un ambiente de ubunto
+
+    env: # Variabes de ambiente para ser usada en el job. El valor de estas variabkes es tomado de os secretos 
+      AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }} # Variable login en AWS - Access key id
+      AWS_KEY_ACCESS_ID: ${{ secrets.AWS_KEY_ACCESS_ID }} # Variable login en AWS - Secret Access key
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }} # Variable login en AWS - defaut region
+
+    steps:
+      - name: checkout code # Nombre del primer paso
+        uses: actions/checkout@v2 # Trae el código del repo a el runner machine
+
+      - name: configure aws # Nombre del segundo paso
+        run: | # Ejecutamos varios comandos bash. para realizar login in aws
+          echo "Login AWS: $AWS_ACCESS_ID , $AWS_KEY_ACCESS_ID , $AWS_DEFAULT_REGION"
+          aws configure set aws_access_key_id $AWS_ACCESS_ID
+          aws configure set aws_secret_access_key $AWS_KEY_ACCESS_ID
+          aws configure set default.region $AWS_DEFAULT_REGION
+
+      - name: Setup Terraform # Nombre del tercer paso
+        uses: hashicorp/setup-terraform@v1 # Configuramos terraform en el pipeline
+        with:
+          terraform_version: 1.6.5 # Usamos una versión en específico de terrafor. Para este caso, la 1.6.5
+      
+      - name: Terraform Init # Nombre del cuarto paso
+        # Inicializamos directorio de trabajo de terraform. Instalación de plugins, inicializar backend, inicializar módulos
+        run: |
+          ls
+          terraform init 
+      
+      - name: Terraform Format # Nombre del quinto paso
+        run: terraform fmt # Damos un formato de código a todos los archivos con extensión ".tf"
+
+      - name: Terraform Validate # Nombre del sexto paso
+        run: terraform validate # validamos las cnfiguraciones validar sintaxis y configuraciones de archivo como referencias y proveedor 
+
+      - name: Terraform Plan # Nombre del último paso
+        run: terraform plan # Detalla los cambios que se harán a la infraestructura. Lee configuraciones, estados, crea plan de ejecución, detalla resumen de los cambios planeados
