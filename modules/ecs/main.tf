@@ -24,6 +24,18 @@ resource "aws_iam_role" "ecs_role_braves" {
 }
 
 # ---------------------------------------------------------------------
+// Creamos ecr
+resource "aws_ecr_repository" "ecr_braves" {
+  name = "ecr_repo_braves" // Nombre del ECr
+}
+
+# ---------------------------------------------------------------------
+// Creamos un output de la url del ecr
+output "repository_url" {
+  value = aws_ecr_repository.ecr_braves.repository_url
+}
+
+# ---------------------------------------------------------------------
 // Configuración de definición política para iam
 resource "aws_iam_policy" "iam_policy_braves" {
   name        = "full-control-iam"                 // Nombre de la política iam
@@ -85,7 +97,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition_braves" {
 
   container_definitions = jsonencode([{ // Container a correr como parte de la tarea
     name  = "container-braves"
-    image = var.container_image
+    image = aws_ecr_repository.ecr_braves.repository_url // Especificamos la url del ECR
     portMappings = [{
       containerPort = 80
       hostPort      = 80
